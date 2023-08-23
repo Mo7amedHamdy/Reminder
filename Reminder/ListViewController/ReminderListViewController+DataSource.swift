@@ -27,16 +27,19 @@ extension ReminderListViewController {
         //By creating a Task, you create a new unit of work
         //that executes asynchronously.
         Task {
-            
             reminders = tomorrowDataStack.readAll()
-            
             updateSnapshots()
-            
             scheduleLocalNotification()
-            
         }
     }
 
+    //get reminders for notifications
+    func notifiedReminders(completion: @escaping ([Reminder])->Void) {
+        let allReminders = tomorrowDataStack.readAll()
+        let notifiedReminders = allReminders.filter{ $0.dueDate.timeIntervalSince1970 <= Date().timeIntervalSince1970 }
+        completion(notifiedReminders)
+    }
+    
     //Schedules local notification with timeinterval trigger.
        func scheduleLocalNotification(){
            let center = UNUserNotificationCenter.current()
@@ -45,17 +48,17 @@ extension ReminderListViewController {
            var count = 0
            
            for remind in reminders {
-               let content = UNMutableNotificationContent()
-               content.title = remind.title
-               content.body = remind.notes ?? ""
-               content.sound = .default
-               content.userInfo = ["id": remind.id, "dueDate": remind.dueDate, "isComplete": remind.isComplete]
-               content.badge = (count + 1) as NSNumber
-               
                let timeIntervalForRemind = remind.dueDate.timeIntervalSince1970
                let timeIntervalNow = Date().timeIntervalSince1970
                
                if timeIntervalForRemind > timeIntervalNow && remind.isComplete == false {
+                   
+                   let content = UNMutableNotificationContent()
+                   content.title = remind.title
+                   content.body = remind.notes ?? ""
+                   content.sound = .default
+                   content.userInfo = ["id": remind.id, "dueDate": remind.dueDate, "isComplete": remind.isComplete]
+                   content.badge = (count + 1) as NSNumber
                    
                    let timeToTrigger = timeIntervalForRemind - timeIntervalNow
                    
@@ -72,8 +75,8 @@ extension ReminderListViewController {
                            print("succefully notified")
                        }
                    }
+                   count += 1
                }
-               count += 1
            }
        }
     

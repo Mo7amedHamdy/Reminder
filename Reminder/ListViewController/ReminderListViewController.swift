@@ -76,6 +76,7 @@ class ReminderListViewController: UICollectionViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        TomorrowDataStack.shared.isOpened = true
     }
     
     func showDetails(for id: Reminder.ID) {
@@ -172,6 +173,7 @@ class ReminderListViewController: UICollectionViewController {
             initialSnapshot.reloadItems(ids)
         }
         datasource.apply(initialSnapshot)
+//        scheduleLocalNotification()
         headerView?.progress = progress
     }
     

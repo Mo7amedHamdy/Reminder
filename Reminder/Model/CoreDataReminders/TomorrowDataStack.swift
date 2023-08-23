@@ -11,6 +11,8 @@ import CoreData
 class TomorrowDataStack {
     
     static let shared = TomorrowDataStack()
+    
+    var isOpened: Bool = false
 
     private var context = (UIApplication.shared.delegate as? AppDelegate)?.persistantContainer.viewContext
     

@@ -69,12 +69,21 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         guard let navbarController = window.rootViewController as? UINavigationController else { return }
         let vc3 = navbarController.viewControllers[0] as! ReminderListViewController
         
-        let reminder = Reminder(id: content.userInfo["id"] as! String, title: content.title, dueDate: content.userInfo["dueDate"] as! Date, notes: content.body, isComplete: content.userInfo["isComplete"] as! Bool)
+//        let reminder = Reminder(id: content.userInfo["id"] as! String, title: content.title, dueDate: content.userInfo["dueDate"] as! Date, notes: content.body, isComplete: content.userInfo["isComplete"] as! Bool)
 //        let vc = ReminderViewController(reminder: reminder) { newReminder in
 //            vc3.update(newReminder, with: newReminder.id)
 //            vc3.updateSnapshots(reloading: [newReminder.id])
 //        }
-        vc3.updateSnapshots(reloading: [reminder.id])
+        
+        if TomorrowDataStack.shared.isOpened {
+            var ids: [Reminder.ID] = []
+            vc3.notifiedReminders { notifiedReminders in
+                for remind in notifiedReminders {
+                    ids.append(remind.id)
+                }
+                vc3.updateSnapshots(reloading: ids)
+            }
+        }
 //        navbarController.pushViewController(vc, animated: true)
     }
 }
